@@ -6,19 +6,21 @@ package fr.esipe.zookeeper.tp.reservation.web;
 import fr.esipe.zookeeper.tp.reservation.service.HelloWorldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class AppController {
 
-    @Autowired
-    private HelloWorldService helloWorldService;
 
-    @GetMapping("/")
-    @ResponseBody
-    public String helloWorld() {
-        return this.helloWorldService.getHelloMessage();
+    @RequestMapping("/")
+    public String index(Model model) {
+
+        model.addAttribute("message", "World");
+
+        return "index";
     }
 
 }
