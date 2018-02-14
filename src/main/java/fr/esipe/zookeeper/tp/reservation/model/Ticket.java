@@ -7,10 +7,12 @@ public class Ticket {
 
     private String reference;
     private String libelle;
+    private String date;
 
-    public Ticket(String reference, String libelle) {
+    public Ticket(String reference, String libelle, String date) {
         this.reference = reference;
         this.libelle = libelle;
+        this.date = date;
     }
 
     public Ticket() {
@@ -31,5 +33,13 @@ public class Ticket {
 
     public void setLibelle(String libelle) {
         this.libelle = libelle;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

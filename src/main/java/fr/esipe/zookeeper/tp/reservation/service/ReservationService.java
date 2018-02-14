@@ -46,7 +46,16 @@ public class ReservationService {
         connector = new ZkConnect();
         ZooKeeper zk = connector.connect(zkHost);
 
-        connector.createNode(idClientPath + "/" + ticket.getReference(), ticket.getLibelle().getBytes());
+        connector.createNode(idClientPath + "/tk_" + ticket.getReference(), ticket.getLibelle().getBytes());
+
+    }
+
+    public void createDateZNode(String idClientPath, Ticket ticket) throws Exception {
+
+        connector = new ZkConnect();
+        ZooKeeper zk = connector.connect(zkHost);
+
+        connector.createNode(idClientPath + "/dt_" + ticket.getDate(), ticket.getDate().getBytes());
 
     }
 
