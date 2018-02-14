@@ -11,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 
 @Controller
@@ -38,13 +35,16 @@ public class ReservationController {
         return client.toString();
     }
 
-    @RequestMapping(value = "/reservation/ticket/{refClient}", method = RequestMethod.GET)
+    @RequestMapping(value = "/reservation/ticket", method = RequestMethod.POST)
     @ResponseBody
-    public String reservationTicket(@PathVariable String refClient) throws Exception {
+    public String reservationTicket(@RequestParam String refClient, @RequestParam String refTicket) throws Exception {
+
+
+        logger.info("Controller reservationTicket : \n refClient: " + refClient + "\n refTicket: " + refTicket);
 
         String clientPath = service.getIdClientPath(refClient);
 
-        Ticket ticket = new Ticket("DE343234", "Paris-Lyon", "03-03-18");
+        Ticket ticket = new Ticket(refTicket, "Paris-Lyon", "03-03-18");
 
         service.createTicketRefNode(clientPath, ticket);
 
@@ -54,13 +54,15 @@ public class ReservationController {
                 "}";
     }
 
-    @RequestMapping(value = "/reservation/date/{refClient}", method = RequestMethod.GET)
+    @RequestMapping(value = "/reservation/date", method = RequestMethod.POST)
     @ResponseBody
-    public String reservationDate(@PathVariable String refClient) throws Exception {
+    public String reservationDate(@RequestParam String refClient, @RequestParam String date) throws Exception {
+
+        logger.info("Controller reservationDate : \n refClient: " + refClient + "\n date: " + date);
 
         String clientPath = service.getIdClientPath(refClient);
 
-        Ticket ticket = new Ticket("DE343234", "Paris-Lyon", "03-03-18");
+        Ticket ticket = new Ticket("DE343234", "Paris-Lyon", date);
 
         service.createDateZNode(clientPath, ticket);
 
