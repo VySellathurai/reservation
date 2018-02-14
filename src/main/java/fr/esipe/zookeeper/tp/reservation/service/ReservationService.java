@@ -3,6 +3,7 @@ package fr.esipe.zookeeper.tp.reservation.service;
 /**
  * Created by Vyach on 13/02/2018.
  */
+import fr.esipe.zookeeper.tp.reservation.model.Client;
 import fr.esipe.zookeeper.tp.reservation.model.Ticket;
 import fr.esipe.zookeeper.tp.reservation.zookeeper.ZkConnect;
 import org.apache.zookeeper.ZooKeeper;
@@ -23,18 +24,18 @@ public class ReservationService {
 
     private ZkConnect connector;
 
-    public void createIdClientNode(String fulliDentite) throws Exception {
+    public void createIdClientNode(Client client) throws Exception {
 
         Date date = new Date();
-
-        String idClient = fulliDentite + "#" + date;
-
-        logger.info("Consitution of idClient : " + idClient);
 
         connector = new ZkConnect();
         ZooKeeper zk = connector.connect(zkHost);
 
-        connector.createNode("/id_" + idClient, fulliDentite.getBytes());
+        String path = "/id_" + client.getReference();
+
+        connector.createNode(path, client.getName().getBytes());
+
+        logger.info("path created : " + path + "\n value : " + client.getName());
 
         connector.close();
 
@@ -46,7 +47,11 @@ public class ReservationService {
         connector = new ZkConnect();
         ZooKeeper zk = connector.connect(zkHost);
 
-        connector.createNode(idClientPath + "/tk_" + ticket.getReference(), ticket.getLibelle().getBytes());
+        String path = idClientPath + "/tk_" + ticket.getReference();
+
+        connector.createNode(path, ticket.getLibelle().getBytes());
+
+        logger.info("path created : " + path + "\n value : " + ticket.getLibelle());
 
     }
 
@@ -55,8 +60,17 @@ public class ReservationService {
         connector = new ZkConnect();
         ZooKeeper zk = connector.connect(zkHost);
 
-        connector.createNode(idClientPath + "/dt_" + ticket.getDate(), ticket.getDate().getBytes());
+        String path = idClientPath + "/dt_" + ticket.getDate();
 
+        connector.createNode(path, ticket.getDate().getBytes());
+
+        logger.info("path created : " + path + "\n value : " + ticket.getDate());
+
+    }
+
+    public String getIdClientPath(String refClient) {
+
+        return "/id_" + refClient;
     }
 
 }
