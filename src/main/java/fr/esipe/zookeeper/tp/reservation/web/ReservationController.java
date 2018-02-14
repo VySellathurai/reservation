@@ -3,6 +3,8 @@ package fr.esipe.zookeeper.tp.reservation.web;
 /**
  * Created by Vyach on 13/02/2018.
  */
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import fr.esipe.zookeeper.tp.reservation.model.Client;
 import fr.esipe.zookeeper.tp.reservation.model.Ticket;
 import fr.esipe.zookeeper.tp.reservation.service.ReservationService;
@@ -12,6 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
 
 
 @Controller
@@ -23,16 +28,57 @@ public class ReservationController {
     private ReservationService service;
 
 
-    @RequestMapping(value = "/authentification/{name}", method = RequestMethod.GET)
+    @RequestMapping(value = "/authentification", method = RequestMethod.POST)
     @ResponseBody
-    public String index(@PathVariable String name) throws Exception {
+    public String index(@RequestParam String name, @RequestParam String reference) throws Exception {
 
-        Client client = new Client(name);
-        service.createIdClientNode(client);
+        logger.info("Controller index : \n name: " + name + "\n reference: " + reference);
 
-        logger.info("Json string is retourning...");
+        String response = "{}";
 
-        return client.toString();
+        Client client;
+
+        //si le client ne fournit aucune reference alors on creer un znode avec une reference genere
+        if (reference == null || reference == "") {
+
+            logger.info("creation du znode associe");
+            client = new Client(name);
+            service.createIdClientNode(client);
+
+            response = client.toString();
+
+
+        } else {
+            logger.info("reference detecte");
+            client = new Client(name, reference);
+
+            String idRefPath = service.getIdClientPath(reference);
+
+            List<String> childrenZnode = service.getZNodePathFromIdRefPath(idRefPath);
+
+            logger.info("Children of znode: " + idRefPath + "are " + childrenZnode.toString());
+
+            String childrenPath;
+            String childrenData;
+            HashMap<String, String> childrensMap = new HashMap<String, String>();
+            for(String children : childrenZnode) {
+                childrenPath = idRefPath + "/" + children.toString();
+                childrenData = service.getZNodeData(childrenPath);
+                logger.info("path to children :" + childrenPath);
+
+                childrensMap.put(children.toString(), childrenData);
+
+            }
+
+            String json = new ObjectMapper().writeValueAsString(childrensMap);
+
+            logger.info("JSON response : " + json);
+
+
+            response = json;
+        }
+
+        return response;
     }
 
     @RequestMapping(value = "/reservation/ticket", method = RequestMethod.POST)

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class ReservationService {
@@ -53,6 +54,8 @@ public class ReservationService {
 
         logger.info("path created : " + path + "\n value : " + ticket.getLibelle());
 
+        connector.close();
+
     }
 
     public void createDateZNode(String idClientPath, Ticket ticket) throws Exception {
@@ -66,6 +69,8 @@ public class ReservationService {
 
         logger.info("path created : " + path + "\n value : " + ticket.getDate());
 
+        connector.close();
+
     }
 
     public String getIdClientPath(String refClient) {
@@ -73,4 +78,29 @@ public class ReservationService {
         return "/id_" + refClient;
     }
 
+    public List<String> getZNodePathFromIdRefPath(String idRefPath) throws Exception {
+
+        connector = new ZkConnect();
+        ZooKeeper zk = connector.connect(zkHost);
+
+        List<String> childrens = connector.getZNodeChildren(idRefPath);
+
+        connector.close();
+
+        return childrens;
+    }
+
+    public String getZNodeData(String path) throws Exception {
+
+        connector = new ZkConnect();
+        ZooKeeper zk = connector.connect(zkHost);
+
+        String data = (String) connector.getZNodeData(path);
+
+        logger.info("from path: " + path + " data: " + data);
+
+        connector.close();
+
+        return data;
+    }
 }

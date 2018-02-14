@@ -4,6 +4,7 @@ package fr.esipe.zookeeper.tp.reservation.zookeeper;
  * Created by Vyach on 13/02/2018.
  */
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.zookeeper.*;
@@ -70,6 +71,13 @@ public class ZkConnect {
         String data = new String(b, "UTF-8");
 
         return data;
+    }
+
+    public List<String> getZNodeChildren(String path) throws KeeperException, InterruptedException {
+
+        List<String> childrens = zk.getChildren(path, true);
+
+        return childrens;
     }
 
 }
